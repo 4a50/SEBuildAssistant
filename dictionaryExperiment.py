@@ -19,7 +19,7 @@
 #   15. Medical Components
 #   16. Metal Grid
 #   17. Motor
-#   18. Power Cell
+#   18. Power Celld
 #   19. Radio Communication Components
 #   20. Reactor Comp
 #   21. Small Steel Tube
@@ -35,7 +35,7 @@
 #   31. Dh (Dimensions Height)
 #   32. Thrust (kN)
 #   33. IsLarge
-# Remove
+
 from pathlib import Path
 
 
