@@ -1,5 +1,5 @@
 #Space Engineers Buidler Assistant
-#SEBuildAsst.py
+#SEBuildAsstV3.py
 #   blockElements list fed in from Main program
 #   0. Name (String)
 #   1. Catagory (String)
@@ -37,7 +37,7 @@
 #   33. IsLarge
 
 from pathlib import Path
-
+from SEBuildAsstClass import *
 
 def Main():
     if (Path('SEDataSheet.csv').exists()):
@@ -45,11 +45,16 @@ def Main():
         dataFile = open (fileUse, "r")
         dataRead = (dataFile).readlines()
         dataFile.close
-    #--Remove the Pop AFTER you fix the .CSV#
+        itemDict = buildDict(dataRead)
+    gui = Gui(itemDict)
+    gui.initScreen()
+    #print ("Project Complete")
+    gui.win.mainloop()
+    
+def buildDict(dataRead):
+    #--Remove the Pop AFTER you fix the .CSV
     dataRead.pop(0)
-    print (dataRead[0])
-    print ("Data Read Number of Lines:", len(dataRead))
-    print ("LEN dataread", len(dataRead))
+    itemDict = {}
     for i in range(len(dataRead)):
         item = dataRead[i].split(",")
         for i in range(2, 30):
@@ -57,10 +62,8 @@ def Main():
         for i in range(30, 33):
             item[i] = float(item[i])
         item[33] = bool(item[33])
-        print ("item:", item)
-        itemDict = {item[0]: item}
-        print (itemDict)
-        print ("<<<<Complete with one line>>>>")
+        itemDict.update({item[0]: item})
+    return itemDict
 
 
 if __name__ == '__main__':
