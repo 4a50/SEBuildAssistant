@@ -27,15 +27,15 @@
 #   23. Steel Plate
 #   24. Super Conductor
 #   25. Thruster
-#   26. Mass (kg)
-#   27. Max Mass (kg) <-- If Storage Container number will be different than Mass
-#   28. Power (+ Used / - Supplier)(kW)
-#   29. Dl (Dimensions Length)
-#   30. Dw (Dimensions Width)
-#   31. Dh (Dimensions Height)
+#   26. Power (+ Used / - Supplier)(kW)
+#   27. Dl (Dimensions Length)
+#   28. Dw (Dimensions Width)
+#   29. Dh (Dimensions Height)
+#   30. Mass (kg)
+#   31. Max Mass (kg) <-- If Storage Container number will be different than Mass
 #   32. Thrust (kN)
 #   33. IsLarge
-#   VSCODE 123
+
 from pathlib import Path
 
 
@@ -49,16 +49,20 @@ def Main():
     dataRead.pop(0)
     print (dataRead[0])
     print ("Data Read Number of Lines:", len(dataRead))
-
-    item = dataRead[0].split(",")
-    for i in range(2, 32):
-        item[i] = int(item[i])
-    item[32] = float(item[32])
-    item[33] = bool(item[33])
-    print ("item:", item)
-    itemDict = {item[0]: item}
-    
-    print (itemDict)
+    print ("LEN dataread", len(dataRead))
+    for i in range(len(dataRead)):
+        item = dataRead[i].split(",")
+        for i in range(2, 30):
+            item[i] = int(item[i])
+        for i in range(30, 33):
+            item[i] = float(item[i])
+        item[33] = bool(item[33])
+        print ("item:", item)
+        itemDict = {item[0]: item}
+        item.pop(0)
+        print ("Item is now:", item)
+        print (itemDict)
+        print ("<<<<Complete with one line>>>>")
 
 
 if __name__ == '__main__':
