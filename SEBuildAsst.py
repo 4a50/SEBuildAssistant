@@ -45,13 +45,12 @@ def Main():
         dataFile = open (fileUse, "r")
         dataRead = (dataFile).readlines()
         dataFile.close
-        itemDict = buildDict(dataRead)
+        itemDict = BuildDict(dataRead)
     gui = Gui(itemDict)
     gui.initScreen()
-    #print ("Project Complete")
     gui.win.mainloop()
     
-def buildDict(dataRead):
+def BuildDict(dataRead):
     #--Remove the Pop AFTER you fix the .CSV
     dataRead.pop(0)
     itemDict = {}
