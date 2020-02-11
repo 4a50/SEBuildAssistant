@@ -154,14 +154,16 @@ class Gui:
     #items (Wind Turbine) -> components (Steel Plate)
     #                     -> characterisitics
     def __init__(self, items):
+        self.items = items
         self.itemList = []
         for i in items.keys():
             self.itemList.append(i)
         self.itemList.sort()
+        self.itemClickList = []
         self.runningTotal = [0] * 24
+        self.preTotal = [0] * 24
         self.blockTracker = []
         self.runningTotalLabels = [""] * 24
-        self.materials = []
         self.materialLabels = ["200mm Missile Container",
         "25x184mm NATO Ammo Container",
         "Bulletproof Glass",
@@ -191,11 +193,8 @@ class Gui:
         self.atmospheres = 1
         self.thrust = 0
         self.selectedBlockIndex = None
-
-
         self.win = Tk()
         self.win.title("Space Engineer Build Assistant")
-
      ####    FRAMES
         self.frameListBox = LabelFrame(self.win, labelanchor='n',text="Block List", padx=4, pady=4, bd=6 )
         self.frameMaterials = LabelFrame(self.win, labelanchor='n',text="Materials Required", padx=10, pady=10, bd=6)
@@ -204,8 +203,8 @@ class Gui:
         self.frameBlockMaterialsButtons = LabelFrame(self.win,padx=10, pady=10, bd=6)
         self.frameBlocksUsed = LabelFrame(self.win, labelanchor='n', text="Blocks Used", padx=4, pady=4, bd=6)
      ####
-        self.itemListBox = Listbox(self.frameListBox, height=12)
-        #self.itemListBox.bind('<<ListboxSelect>>', self.selection)
+        self.itemListBox = Listbox(self.frameListBox, height=12, selectmode=MULTIPLE)
+        self.itemListBox.bind('<<ListboxSelect>>', self.selection)
 
         self.blocksUsedListBox = Listbox(self.frameBlocksUsed, height=12, disabledforeground='Black')
        ####    BUTTONS
@@ -232,7 +231,9 @@ class Gui:
             if (row >= 9):
                 column = column + 2
                 row = 0
+            # Populated by zeros until data is filled in
             (Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
+            (Label(self.frameRunningTotals, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
             (Label(self.frameMaterials, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
             (Label(self.frameRunningTotals, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
         ###Draw all the Frames not already drawn by other functions
@@ -243,9 +244,6 @@ class Gui:
         self.frameRunningTotals.grid(column=1, row=2)
         
         self.frameBlockMaterialsButtons.grid(row=1,column=1, columnspan=4)
-
-        #self.updateRunningTotals()
-        #self.updateMaterialList()
         self.frameMassThrust.grid(column=0, row=1, sticky=N+E+S+W)
         self.frameBlocksUsed.grid(column=0, row=2, stick=N+E+W+S)
         print("Frames Gridded")
@@ -280,6 +278,15 @@ class Gui:
             self.materialLabels[i].grid(row=row, column=column)
 
         (self.frameMaterials).grid(column=1, row=0, sticky=N+E+S+W)
-        self.frameMassThrust.grid(column=0, row=1, sticky=N + E + S + W)
+        self.frameMassThrust.grid(column=0, row=1, sticky=N + E + S + W)    
+    def selection(self, evt):
+        self.itemClickList = evt.widget
+        print (self.itemClickList.curselection())
+        if self.itemClickList != []:
+            for i in self.itemClickList:
+                print (self.items[i])
+        
+
+
     
     
