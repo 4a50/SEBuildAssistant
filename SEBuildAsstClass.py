@@ -154,10 +154,9 @@ class Gui:
     #items (Wind Turbine) -> components (Steel Plate)
     #                     -> characterisitics
     def __init__(self, items):
-        self.items = items
-        self.itemList = []
-        for i in items.keys():
-            self.itemList.append(i)
+        self.items = items          #Dictionary of items
+        self.itemList = list(self.items.keys())          #Capture the names of the items for the listBox
+         #Populate the keys into a usable list
         self.itemList.sort()
         self.itemClickList = []
         self.itemToAddList=[]
@@ -189,6 +188,7 @@ class Gui:
         "Steel Plate",
         "Super Conductor",
         "Thruster"]
+        
         self.runningMaxMass = 0
         self.gravity = 9.8
         self.atmospheres = 1
@@ -294,6 +294,7 @@ class Gui:
             print (self.items[self.itemList[0]])
             self.runningTotal[i] += (self.items[self.itemList[0]][i])
             print (self.runningTotal)
+            print("Done with the AddRunTotal")
 
 
 
