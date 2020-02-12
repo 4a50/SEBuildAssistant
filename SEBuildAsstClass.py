@@ -160,6 +160,7 @@ class Gui:
             self.itemList.append(i)
         self.itemList.sort()
         self.itemClickList = []
+        self.itemToAddList=[]
         self.runningTotal = [0] * 24
         self.preTotal = [0] * 24
         self.blockTracker = []
@@ -195,21 +196,21 @@ class Gui:
         self.selectedBlockIndex = None
         self.win = Tk()
         self.win.title("Space Engineer Build Assistant")
-     ####    FRAMES
+        ####    FRAMES
         self.frameListBox = LabelFrame(self.win, labelanchor='n',text="Block List", padx=4, pady=4, bd=6 )
         self.frameMaterials = LabelFrame(self.win, labelanchor='n',text="Materials Required", padx=10, pady=10, bd=6)
         self.frameRunningTotals = LabelFrame(self.win, labelanchor='n', text="Total Units Required", padx=10, pady=10, bd=6)
-        self.frameMassThrust = LabelFrame(self.win, labelanchor='n', text="Mass/Thrust", padx=4, pady=4, bd=6)
+        self.frameAddRemoveItems = LabelFrame(self.win, labelanchor='n', text="Add/Remove Items", padx=4, pady=4, bd=6)
         self.frameBlockMaterialsButtons = LabelFrame(self.win,padx=10, pady=10, bd=6)
         self.frameBlocksUsed = LabelFrame(self.win, labelanchor='n', text="Blocks Used", padx=4, pady=4, bd=6)
-     ####
+        ####
         self.itemListBox = Listbox(self.frameListBox, height=12, selectmode=MULTIPLE)
         self.itemListBox.bind('<<ListboxSelect>>', self.selection)
 
         self.blocksUsedListBox = Listbox(self.frameBlocksUsed, height=12, disabledforeground='Black')
-       ####    BUTTONS
-        self.removeButton = Button(self.frameBlockMaterialsButtons, text="remove")
-        self.addButton = Button(self.frameBlockMaterialsButtons, text="add")
+        ####    BUTTONS
+        self.removeButton = Button(self.frameAddRemoveItems, justify=CENTER, text="-")
+        self.addButton = Button(self.frameAddRemoveItems, justify=CENTER, text="+", command=self.addRunTotal)
         self.clearButton = Button(self.frameBlockMaterialsButtons, text="clear all")
         self.exportButton = Button(self.frameBlockMaterialsButtons, text="export")
         self.quitButton = Button(self.frameBlockMaterialsButtons, text="quit", command=self.quitApp)
@@ -244,7 +245,7 @@ class Gui:
         self.frameRunningTotals.grid(column=1, row=2)
         
         self.frameBlockMaterialsButtons.grid(row=1,column=1, columnspan=4)
-        self.frameMassThrust.grid(column=0, row=1, sticky=N+E+S+W)
+        self.frameAddRemoveItems.grid(column=0, row=1, sticky=N+E+S+W)
         self.frameBlocksUsed.grid(column=0, row=2, stick=N+E+W+S)
         print("Frames Gridded")
 
@@ -278,13 +279,32 @@ class Gui:
             self.materialLabels[i].grid(row=row, column=column)
 
         (self.frameMaterials).grid(column=1, row=0, sticky=N+E+S+W)
-        self.frameMassThrust.grid(column=0, row=1, sticky=N + E + S + W)    
+        self.frameAddRemoveItems.grid(column=0, row=1, sticky=N + E + S + W)    
+    def addRunTotal(self):
+        itemsClicked = []
+        print("addRunTotal Started Correctly")
+        if self.itemClickList.curselection() != []:
+            for i in self.itemClickList.curselection():
+                itemsClicked.append(i)
+            print (len(self.runningTotal), len(self.itemList[0]))
+            
+            # for i in itemsClicked:
+            #     for q in range(2,26):
+            #         print (type(self.runningTotal[q]), self.items[self.itemList[i]])
+            print (self.items[self.itemList[0]])
+            self.runningTotal[i] += (self.items[self.itemList[0]][i])
+            print (self.runningTotal)
+
+
+
+
+
     def selection(self, evt):
         self.itemClickList = evt.widget
         print (self.itemClickList.curselection())
-        if self.itemClickList != []:
-            for i in self.itemClickList:
-                print (self.items[i])
+
+        
+                
         
 
 
