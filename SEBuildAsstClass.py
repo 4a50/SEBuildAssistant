@@ -205,11 +205,12 @@ class Gui:
         self.frameBlocksUsed = LabelFrame(self.win, labelanchor='n', text="Blocks Used", padx=4, pady=4, bd=6)
         ####
         self.itemListBox = Listbox(self.frameListBox, height=12, selectmode=MULTIPLE)
-        self.itemListBox.bind('<<ListboxSelect>>', self.selection)
+        self.itemListBox.bind('<<ListboxSelect>>', self.addSelection)
 
-        self.blocksUsedListBox = Listbox(self.frameBlocksUsed, height=12, disabledforeground='Black')
+        self.blocksUsedListBox = Listbox(self.frameBlocksUsed, height=12, selectmode=MULTIPLE)
+        self.blocksUsedListBox.bind('<<ListboxSelect>>', self.subSelection)
         ####    BUTTONS
-        self.removeButton = Button(self.frameAddRemoveItems, justify=CENTER, text="-")
+        self.removeButton = Button(self.frameAddRemoveItems, justify=CENTER, text="-", command=self.subRunTotal)
         self.addButton = Button(self.frameAddRemoveItems, justify=CENTER, text="+", command=self.addRunTotal)
         self.clearButton = Button(self.frameBlockMaterialsButtons, text="clear all")
         self.exportButton = Button(self.frameBlockMaterialsButtons, text="export")
@@ -281,28 +282,49 @@ class Gui:
         (self.frameMaterials).grid(column=1, row=0, sticky=N+E+S+W)
         self.frameAddRemoveItems.grid(column=0, row=1, sticky=N + E + S + W)    
     def addRunTotal(self):
-        itemsClicked = []
+        selectedMaterialList = []
+        #itemClickList stores the index numbers from the selection event.  selectedMaterialList breake out
+        #materials into an integered list.  The materialList for loop adds the integers from selectedMaterial List to runningTotals.
+        print (self.itemClickList)
         print("addRunTotal Started Correctly")
-        if self.itemClickList.curselection() != []:
-            for i in self.itemClickList.curselection():
-                itemsClicked.append(i)
-            print (len(self.runningTotal), len(self.itemList[0]))
-            
-            # for i in itemsClicked:
-            #     for q in range(2,26):
-            #         print (type(self.runningTotal[q]), self.items[self.itemList[i]])
-            print (self.items[self.itemList[0]])
-            self.runningTotal[i] += (self.items[self.itemList[0]][i])
+        if self.itemClickList!= []:
+            for lists in self.itemClickList:
+                selectedMaterialList.append((self.items[self.itemList[lists]][2:26]))
+                self.blocksUsedListBox.insert(END, self.itemList[lists])
+            print (len(self.runningTotal), len(selectedMaterialList[0])) 
+            print (self.runningTotal)
+            for materialList in selectedMaterialList:
+                for materials in range(len(materialList)):
+                    print(materialList[materials])
+                    self.runningTotal[materials] += materialList[materials] 
+            print ("Running Total:")
             print (self.runningTotal)
             print("Done with the AddRunTotal")
-
-
-
-
-
-    def selection(self, evt):
-        self.itemClickList = evt.widget
-        print (self.itemClickList.curselection())
+            self.blocksUsedListBox.grid()
+    def subRunTotal(self):
+        selectedMaterialList = []
+        #itemClickList stores the index numbers from the selection event.  selectedMaterialList breaks out
+        #materials into an integered list.  The materialList for loop subtracts the integers from selectedMaterial List to runningTotals.
+        print (self.itemClickList)
+        print("subRunTotal Started Correctly")
+        if self.itemClickList!= []:
+            for lists in self.itemClickList:
+                selectedMaterialList.append((self.items[self.itemList[lists]][2:26]))
+                # self.blocksUsedListBox.insert(END, self.itemList[lists])
+                
+                print ("Item to be Removed:", self.blocksUsedListBox.get(lists))
+            
+            for materialList in selectedMaterialList:
+                for materials in range(len(materialList)):
+                    if self.runningTotal[materials] > 0:                        
+                        self.runningTotal[materials] -= materialList[materials] 
+                    else:                        
+                        self.runningTotal[materials] = 0
+        print("Done with the subRunTotal")
+    def addSelection(self, evt):
+        self.itemClickList = list(evt.widget.curselection())
+    def subSelection(self, evt):
+        self.itemClickList = list(evt.widget.curselection())
 
         
                 
