@@ -154,6 +154,8 @@ class Gui:
     #items (Wind Turbine) -> components (Steel Plate)
     #                     -> characterisitics
     def __init__(self, items):
+        self.win = Tk()
+        self.win.title("Space Engineer Build Assistant")
         self.items = items          #Dictionary of items
         self.itemList = list(self.items.keys())          #Capture the names of the items for the listBox
          #Populate the keys into a usable list
@@ -163,7 +165,11 @@ class Gui:
         self.runningTotal = [0] * 24
         self.preTotal = [0] * 24
         self.blockTracker = []
-        self.runningTotalLabels = [""] * 24
+        #Labels for easier update of information 
+        self.runningTotalLabels = [None] * 24
+        
+        self.runningTotalLabelsStrVar = [StringVar()] * 24
+
         self.materialLabels = ["200mm Missile Container",
         "25x184mm NATO Ammo Container",
         "Bulletproof Glass",
@@ -188,14 +194,12 @@ class Gui:
         "Steel Plate",
         "Super Conductor",
         "Thruster"]
-        
         self.runningMaxMass = 0
         self.gravity = 9.8
         self.atmospheres = 1
         self.thrust = 0
         self.selectedBlockIndex = None
-        self.win = Tk()
-        self.win.title("Space Engineer Build Assistant")
+        
         ####    FRAMES
         self.frameListBox = LabelFrame(self.win, labelanchor='n',text="Block List", padx=4, pady=4, bd=6 )
         self.frameMaterials = LabelFrame(self.win, labelanchor='n',text="Materials Required", padx=10, pady=10, bd=6)
@@ -227,15 +231,18 @@ class Gui:
         for i in range(0, len(self.itemList)):
             self.itemListBox.insert(END, self.itemList[i])
         #materialLabel for both frameMaterials and frameRunningTotals Populated
-        print ("Length of materialLabels:", len(self.materialLabels))
         for i in range(0,len(self.materialLabels)):
             row = row + 1
             if (row >= 9):
                 column = column + 2
                 row = 0
-            # Populated by zeros until data is filled in
+            # Labels are updated based on the string value given by the runningTotals and 
+            
             (Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
-            (Label(self.frameRunningTotals, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
+            self.runningTotalLabelsStrVar[i].set(self.runningTotal[i])
+            print ("initial Population of StrVar:", self.runningTotalLabelsStrVar[i].get())
+            self.runningTotalLabels[i] = (Label(self.frameRunningTotals, textvariable=self.runningTotalLabelsStrVar[i], justify=LEFT))
+            self.runningTotalLabels[i].grid(row=row, column=column+1, sticky=E)
             (Label(self.frameMaterials, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
             (Label(self.frameRunningTotals, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
         ###Draw all the Frames not already drawn by other functions
@@ -257,30 +264,20 @@ class Gui:
         self.exportButton.grid(row=0, column=3)
         self.quitButton.grid(row=0, column=4)
             #Total Mass and thrust needed
+        self.updateMaterialList()
     def updateMaterialList(self):
-        (self.frameMaterials.grid_remove())
-
-        row, column = -1, 1
-        if self.selectedBlockIndex == None:
-            self.selectedBlockIndex = 0
-            print ("It's None Type: setting 0")
-        for i in range(0, len(self.materialLabels)):
+        row = -1
+        column = 0
+        for i in range(0,len(self.materialLabels)):
             row = row + 1
             if (row >= 9):
                 column = column + 2
                 row = 0
-            # self.runningTotalLabels[i].grid_forget()
-            ## Use Error catching for free up display.
-            try:
-                self.blockList[self.selectedBlockIndex].materials[i].grid_forget()
-            except:
-                print("Material List not displayed yet")
+            # Populated by zeros until data is filled in
+            (Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
+            self.runningTotalLabelsStrVar[i].set(self.runningTotal[i])
+            
 
-            self.materialLabels[i] = Label(self.frameMaterials, text=self.blockList[self.selectedBlockIndex].materials[i], justify=LEFT, width=5)
-            self.materialLabels[i].grid(row=row, column=column)
-
-        (self.frameMaterials).grid(column=1, row=0, sticky=N+E+S+W)
-        self.frameAddRemoveItems.grid(column=0, row=1, sticky=N + E + S + W)    
     def addRunTotal(self):
         selectedMaterialList = []
         #itemClickList stores the index numbers from the selection event.  selectedMaterialList breake out
@@ -297,39 +294,40 @@ class Gui:
                 for materials in range(len(materialList)):
                     print(materialList[materials])
                     self.runningTotal[materials] += materialList[materials] 
+                    self.runningTotalLabelsStrVar[materials].set(self.runningTotal[materials])
             print ("Running Total:")
             print (self.runningTotal)
+            self.updateMaterialList()
             print("Done with the AddRunTotal")
             self.blocksUsedListBox.grid()
     def subRunTotal(self):
         selectedMaterialList = []
         #itemClickList stores the index numbers from the selection event.  selectedMaterialList breaks out
         #materials into an integered list.  The materialList for loop subtracts the integers from selectedMaterial List to runningTotals.
-        print (self.itemClickList)
         print("subRunTotal Started Correctly")
         if self.itemClickList!= []:
+            #This will cycle through the strings in the itemClickList and add it to the local variable selectedMaterialList[]
             for lists in self.itemClickList:
-                selectedMaterialList.append((self.items[self.itemList[lists]][2:26]))
+                selectedMaterialList.append(self.items[self.blocksUsedListBox.get(lists)][2:26])
                 # self.blocksUsedListBox.insert(END, self.itemList[lists])
-                
+                print ("--")
                 print ("Item to be Removed:", self.blocksUsedListBox.get(lists))
-            
+                print ("Items:", self.items[self.blocksUsedListBox.get(lists)][2:26])
+                print ("RunTL:", self.runningTotal)
+                print ("--")
+            #This will loop through local var selectedMaterialList and subtract each value from the runningTotal List
             for materialList in selectedMaterialList:
                 for materials in range(len(materialList)):
                     if self.runningTotal[materials] > 0:                        
                         self.runningTotal[materials] -= materialList[materials] 
                     else:                        
                         self.runningTotal[materials] = 0
+            print (self.runningTotal)
+            #Insert Function Here to update the values, need to streamline how it's done, so there is no laggy refresh of the window
+            self.initScreen()
         print("Done with the subRunTotal")
     def addSelection(self, evt):
         self.itemClickList = list(evt.widget.curselection())
     def subSelection(self, evt):
-        self.itemClickList = list(evt.widget.curselection())
-
-        
-                
-        
-
-
-    
+        self.itemClickList = list(evt.widget.curselection())   
     
