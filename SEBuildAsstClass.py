@@ -148,8 +148,6 @@ class Blocks:
 
         #print ("Updated Component Index: %s" %indexNumber-2, "Qty: %s" %componentQty)
 
-
-
 class Gui:
     #items (Wind Turbine) -> components (Steel Plate)
     #                     -> characterisitics
@@ -167,8 +165,10 @@ class Gui:
         self.blockTracker = []
         #Labels for easier update of information 
         self.runningTotalLabels = [None] * 24
-        
-        self.runningTotalLabelsStrVar = [StringVar()] * 24
+        self.runningTotalLabelsStrVar = [None] * 24
+        for i in range(len(self.runningTotalLabelsStrVar)):
+            self.runningTotalLabelsStrVar[i] = StringVar()
+
 
         self.materialLabels = ["200mm Missile Container",
         "25x184mm NATO Ammo Container",
@@ -223,14 +223,15 @@ class Gui:
     def quitApp(self):
         print ("Attempting Self Destruct")
         self.win.destroy()
-
+        
     def initScreen(self):
-        row = -1
-        column = 0
+        
         #itemListBox is populated with items
         for i in range(0, len(self.itemList)):
             self.itemListBox.insert(END, self.itemList[i])
         #materialLabel for both frameMaterials and frameRunningTotals Populated
+        row = -1
+        column = 0
         for i in range(0,len(self.materialLabels)):
             row = row + 1
             if (row >= 9):
@@ -239,10 +240,11 @@ class Gui:
             # Labels are updated based on the string value given by the runningTotals and 
             
             (Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
+            
             self.runningTotalLabelsStrVar[i].set(self.runningTotal[i])
-            print ("initial Population of StrVar:", self.runningTotalLabelsStrVar[i].get())
             self.runningTotalLabels[i] = (Label(self.frameRunningTotals, textvariable=self.runningTotalLabelsStrVar[i], justify=LEFT))
             self.runningTotalLabels[i].grid(row=row, column=column+1, sticky=E)
+            
             (Label(self.frameMaterials, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
             (Label(self.frameRunningTotals, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
         ###Draw all the Frames not already drawn by other functions
@@ -288,15 +290,9 @@ class Gui:
             for lists in self.itemClickList:
                 selectedMaterialList.append((self.items[self.itemList[lists]][2:26]))
                 self.blocksUsedListBox.insert(END, self.itemList[lists])
-            print (len(self.runningTotal), len(selectedMaterialList[0])) 
-            print (self.runningTotal)
             for materialList in selectedMaterialList:
                 for materials in range(len(materialList)):
-                    print(materialList[materials])
-                    self.runningTotal[materials] += materialList[materials] 
-                    self.runningTotalLabelsStrVar[materials].set(self.runningTotal[materials])
-            print ("Running Total:")
-            print (self.runningTotal)
+                    self.runningTotal[materials] += materialList[materials]
             self.updateMaterialList()
             print("Done with the AddRunTotal")
             self.blocksUsedListBox.grid()
@@ -309,12 +305,7 @@ class Gui:
             #This will cycle through the strings in the itemClickList and add it to the local variable selectedMaterialList[]
             for lists in self.itemClickList:
                 selectedMaterialList.append(self.items[self.blocksUsedListBox.get(lists)][2:26])
-                # self.blocksUsedListBox.insert(END, self.itemList[lists])
-                print ("--")
-                print ("Item to be Removed:", self.blocksUsedListBox.get(lists))
-                print ("Items:", self.items[self.blocksUsedListBox.get(lists)][2:26])
-                print ("RunTL:", self.runningTotal)
-                print ("--")
+
             #This will loop through local var selectedMaterialList and subtract each value from the runningTotal List
             for materialList in selectedMaterialList:
                 for materials in range(len(materialList)):
@@ -322,10 +313,9 @@ class Gui:
                         self.runningTotal[materials] -= materialList[materials] 
                     else:                        
                         self.runningTotal[materials] = 0
-            print (self.runningTotal)
-            #Insert Function Here to update the values, need to streamline how it's done, so there is no laggy refresh of the window
-            self.initScreen()
+            self.updateMaterialList()
         print("Done with the subRunTotal")
+
     def addSelection(self, evt):
         self.itemClickList = list(evt.widget.curselection())
     def subSelection(self, evt):
