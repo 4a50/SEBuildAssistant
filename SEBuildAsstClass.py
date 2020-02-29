@@ -37,117 +37,6 @@
 #   33. IsLarge
 #SEBuildAsst.py
 from tkinter import *
-class Blocks:
-    def __init__(self):
-        self.name = ""
-        self.catagory = ""
-        self.materials = [0]* 24
-        self.mass = 0
-        self.maxMass = 0
-        self.power = 0
-        self.dimensions = [0]*3
-        self.isLarge = True
-        self.thrust = 0
-        self.materialsNomen = ["200mm Missile Container", "25x184mm NATO Ammo Container", "Bulletproof Glass", "Canvas",
-            "Computer", "Construction Components", "Detector Equipment", "Display", "Explosives", "Girders",
-            "Gravity Generator Components", "Interior Plate", "Large Steel Tube", "Medical Components",
-            "Metal Grid", "Motor", "Power Cell", "Radio Communication Components", "Reactor Comp", "Small Steel Tube",
-            "Solar Cell", "Steel Plate", "Super Conductor", "Thruster"]
-
-    ##Gets
-    def getListAll (self):
-        print ("----------------------------------------------------------------")
-        print ("Block Name: ", self.name)
-        print ("Catagory: ", self.catagory)
-        for i in range(len(self.materials)):
-            print (self.materialsNomen[i], ":", self.materials[i])
-        print ("Mass:", self.mass)
-        print ("Max Mass:", self.maxMass)
-        print ("Power: ", self.power)
-        print ("Thrust: ", self.thrust)
-        print ("Dimensions (LxWxH):", self.dimensions)
-        print ("Is a Large Block: ", self.isLarge)
-
-    def getName(self):
-        return self.name
-    def getMaterials(self):
-        getMaterials = []
-        for i in range(len(self.materials)):
-            getMaterials.append(self.materials[i])
-        return getMaterials
-    def getCatagory(self):
-        return self.catagory
-    def getMass(self):
-        return self.mass
-    def getMaxMass(self):
-        return self.maxMass
-    def getPower(self):
-        return self.power
-    def getThrust(self):
-        return self.thrust
-    def getDimensions(self):
-        return self.dimensions
-    def getIsLarge(self):
-        return self.isLarge
-
-    ##Sets
-    def setName(self, name):
-        self.name = name
-    def setCatagory(self, catagory):
-        self.catagory = catagory
-    # See comments above to determine elementNum
-    def setMaterial(self, elementNum, qty):
-        try:
-            self.setMaterial[elementNum - 2]  = qty
-        except:
-            print ("Unable to set the material value")
-    def setMass(self, qty):
-        self.mass=qty
-    def setMaxMass(self, qty):
-        self.maxMass = qty
-    def setPower(self, qty):
-        self.power = qty
-    def setThrust(self, qty):
-        self.thrust = qty
-    def setDimensionLength(self, qty):
-        self.dimensions[0] = qty
-    def setDimensionWidth(self, qty):
-        self.dimensions[1]
-    def setDimensionHeight(self, qty):
-        self.dimensions[2]
-    def setIsLarge(self, bool):
-        if bool != True or bool !=False:
-            print ("Not a TRUE or FALSE statement.")
-        else:
-            self.isLarge = bool
-
-
-    def UpdateAllMaterials(self, indexNumber, componentQty):
-        #print ("IndexNumber:", indexNumber)
-        if indexNumber == 0:
-            self.name = componentQty
-        elif indexNumber == 1:
-            self.catagory = componentQty
-        elif indexNumber >= 2 and indexNumber <= 25:
-            self.materials[indexNumber - 2] = componentQty
-        elif indexNumber == 26:
-            self.mass = componentQty
-        elif indexNumber == 27:
-            self.maxMass = componentQty
-        elif indexNumber == 28:
-            self.power = componentQty
-        elif indexNumber >= 29 and indexNumber<= 31:
-            self.dimensions[indexNumber - 29] = componentQty
-        elif indexNumber == 32:
-            self.thrust = componentQty
-        elif indexNumber == 33:
-            self.isLarge = componentQty
-        else:
-            print ("SEBuildAsstClass has no where to put the componentQty for indexNumber:", indexNumber)
-
-
-        #print ("Updated Component Index: %s" %indexNumber-2, "Qty: %s" %componentQty)
-
 class Gui:
     #items (Wind Turbine) -> components (Steel Plate)
     #                     -> characterisitics
@@ -164,6 +53,11 @@ class Gui:
         self.preTotal = [0] * 24
         self.blockTracker = []
         #Labels for easier update of information 
+        self.selectedItemsLabels = [None] * 24
+        self.selectedItemsStrVar = [None] * 24
+        for i in range(len(self.selectedItemsStrVar)):
+            self.selectedItemsStrVar[i] = StringVar()
+            self.selectedItemsStrVar[i].set("0")
         self.runningTotalLabels = [None] * 24
         self.runningTotalLabelsStrVar = [None] * 24
         for i in range(len(self.runningTotalLabelsStrVar)):
@@ -224,8 +118,7 @@ class Gui:
         print ("Attempting Self Destruct")
         self.win.destroy()
         
-    def initScreen(self):
-        
+    def initScreen(self):        
         #itemListBox is populated with items
         for i in range(0, len(self.itemList)):
             self.itemListBox.insert(END, self.itemList[i])
@@ -242,6 +135,9 @@ class Gui:
             (Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
             
             self.runningTotalLabelsStrVar[i].set(self.runningTotal[i])
+            self.selectedItemsStrVar[i].set("0")
+            self.selectedItemsLabels[i] = (Label(self.frameMaterials, textvariable=self.selectedItemsStrVar[i], justify=LEFT))
+            self.selectedItemsLabels[i].grid(row=row, column=column+1, sticky=E)
             self.runningTotalLabels[i] = (Label(self.frameRunningTotals, textvariable=self.runningTotalLabelsStrVar[i], justify=LEFT))
             self.runningTotalLabels[i].grid(row=row, column=column+1, sticky=E)
             
@@ -276,7 +172,7 @@ class Gui:
                 column = column + 2
                 row = 0
             # Populated by zeros until data is filled in
-            (Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
+            #(Label(self.frameMaterials, text="0", justify=LEFT)).grid(row=row, column=column+1, sticky=E)
             self.runningTotalLabelsStrVar[i].set(self.runningTotal[i])
             
 
@@ -288,7 +184,8 @@ class Gui:
         print("addRunTotal Started Correctly")
         if self.itemClickList!= []:
             for lists in self.itemClickList:
-                selectedMaterialList.append((self.items[self.itemList[lists]][2:26]))
+                print("lists:", lists)
+                selectedMaterialList.append(self.items[self.itemList[lists]][2:26])
                 self.blocksUsedListBox.insert(END, self.itemList[lists])
             for materialList in selectedMaterialList:
                 for materials in range(len(materialList)):
@@ -317,7 +214,18 @@ class Gui:
         print("Done with the subRunTotal")
 
     def addSelection(self, evt):
+        materialCount = 0
         self.itemClickList = list(evt.widget.curselection())
+        
+        for i in self.itemClickList:
+            for q in range(2,26):
+                print("i", i, "q:", q, "MaterialCount:", materialCount)
+                print("self.item Entry:", self.items[self.itemList[i]][q])
+                self.selectedItemsStrVar[materialCount].set(self.items[self.itemList[i]][q])
+                print("StrVar:", self.selectedItemsStrVar[materialCount].get())
+                materialCount += 1
+        #print (self.itemList[self.itemClickList])
+
     def subSelection(self, evt):
         self.itemClickList = list(evt.widget.curselection())   
     
