@@ -98,21 +98,27 @@ class Gui:
         self.frameListBox = LabelFrame(self.win, labelanchor='n',text="Block List", padx=4, pady=4, bd=6 )
         self.frameMaterials = LabelFrame(self.win, labelanchor='n',text="Materials Required", padx=10, pady=10, bd=6)
         self.frameRunningTotals = LabelFrame(self.win, labelanchor='n', text="Total Units Required", padx=10, pady=10, bd=6)
-        self.frameAddRemoveItems = LabelFrame(self.win, labelanchor='n', text="Add/Remove Items", padx=4, pady=4, bd=6)
+        self.frameAddItems = LabelFrame(self.win, labelanchor='n',  padx=4, pady=6, bd=6)
         self.frameBlockMaterialsButtons = LabelFrame(self.win,padx=10, pady=10, bd=6)
         self.frameBlocksUsed = LabelFrame(self.win, labelanchor='n', text="Blocks Used", padx=4, pady=4, bd=6)
+        self.frameRemoveItems = LabelFrame(self.win, labelanchor='n', padx=4, pady=6, bd=6)
+        self.frameDesignerInformation = LabelFrame(self.win, labelanchor='n')
         ####
-        self.itemListBox = Listbox(self.frameListBox, height=12, selectmode=MULTIPLE)
+        self.itemListBox = Listbox(self.frameListBox, height=12)
         self.itemListBox.bind('<<ListboxSelect>>', self.addSelection)
 
         self.blocksUsedListBox = Listbox(self.frameBlocksUsed, height=12, selectmode=MULTIPLE)
         self.blocksUsedListBox.bind('<<ListboxSelect>>', self.subSelection)
         ####    BUTTONS
-        self.removeButton = Button(self.frameAddRemoveItems, justify=CENTER, text="-", command=self.subRunTotal)
-        self.addButton = Button(self.frameAddRemoveItems, justify=CENTER, text="+", command=self.addRunTotal)
+        self.removeButton = Button(self.frameRemoveItems, justify=CENTER, text="Remove Item", command=self.subRunTotal)
+        self.addButton = Button(self.frameAddItems, justify=CENTER, text="Add Item to Total", command=self.addRunTotal)
         self.clearButton = Button(self.frameBlockMaterialsButtons, text="clear all")
         self.exportButton = Button(self.frameBlockMaterialsButtons, text="export")
         self.quitButton = Button(self.frameBlockMaterialsButtons, text="quit", command=self.quitApp)
+        #### INFO FRAME
+        about1 = "(c) 2020 4a50 Enterprises\nSpace Engineers Build Assistant"
+        Label(self.frameDesignerInformation, text=about1, justify=LEFT).pack(side=RIGHT)
+
 
     def quitApp(self):
         print ("Attempting Self Destruct")
@@ -122,7 +128,6 @@ class Gui:
         #itemListBox is populated with items
         for i in range(0, len(self.itemList)):
             self.itemListBox.insert(END, self.itemList[i])
-        #materialLabel for both frameMaterials and frameRunningTotals Populated
         row = -1
         column = 0
         for i in range(0,len(self.materialLabels)):
@@ -144,24 +149,29 @@ class Gui:
             (Label(self.frameMaterials, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
             (Label(self.frameRunningTotals, text=self.materialLabels[i], justify=LEFT)).grid(row=row, column=column, sticky=E, padx=5)
         ###Draw all the Frames not already drawn by other functions
-        self.itemListBox.grid(pady=3)
-        self.blocksUsedListBox.grid()
-        self.frameListBox.grid(column=0, row=0)
-        self.frameMaterials.grid(column=1, row=0)
-        self.frameRunningTotals.grid(column=1, row=2)
+        self.itemListBox.grid(pady=3, sticky=N+E+S+W)
+        self.blocksUsedListBox.grid(sticky=N+E+S+W)
+        self.frameListBox.grid(column=0, row=0, sticky=N+E+S+W)
+        self.frameMaterials.grid(column=1, row=0, sticky=N+E+S+W)
+        self.frameRunningTotals.grid(column=1, row=2, sticky=N+E+S+W)
+        
         
         self.frameBlockMaterialsButtons.grid(row=1,column=1, columnspan=4)
-        self.frameAddRemoveItems.grid(column=0, row=1, sticky=N+E+S+W)
-        self.frameBlocksUsed.grid(column=0, row=2, stick=N+E+W+S)
+        self.frameAddItems.grid(column=0, row=1, sticky=N+E+S+W)
+        self.frameBlocksUsed.grid(column=0, row=2, sticky=N+E+W+S)
+        self.frameRemoveItems.grid(column=0, row=3, sticky=N+E+S+W)
+        self.frameDesignerInformation.grid(row=3, column=1, sticky=N+E+S+W)
         print("Frames Gridded")
 
         #Material selection Buttons
-        self.addButton.grid(column=0)
-        self.removeButton.grid(row=0, column=1)
+        self.addButton.pack(fill=BOTH)
+        self.removeButton.pack(fill=BOTH)
         self.clearButton.grid(row=0, column=2)
         self.exportButton.grid(row=0, column=3)
         self.quitButton.grid(row=0, column=4)
-            #Total Mass and thrust needed
+    
+        #Total Mass and thrust needed#
+
         self.updateMaterialList()
     def updateMaterialList(self):
         row = -1
